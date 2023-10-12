@@ -13,10 +13,26 @@ std::vector<Estado> ConjuntoEstados::GetVector() {
   return estados;
 }
 
-void ConjuntoEstados::SetEstadoActual(int estado_actual_) {
-  EstadoActual = estado_actual_;
+void ConjuntoEstados::AddEstadoActual(Estado estado_actual_) {
+  EstadoActual.push_back(estado_actual_);
 }
 
-int ConjuntoEstados::GetEstadoActual() {
+std::vector<Estado> ConjuntoEstados::GetEstadoActual() {
   return EstadoActual;
+}
+
+std::vector<Estado> ConjuntoEstados::GetProxEstado() {
+  return ProximosEstados;
+}
+
+void ConjuntoEstados::AddProxEstado(Estado estado) {
+  ProximosEstados.push_back(estado);
+}
+
+void ConjuntoEstados::VaciarProxEstado() {
+  ProximosEstados.resize(0);
+}
+
+void ConjuntoEstados::VaciarEstadoActual() {
+  EstadoActual.resize(0);
 }
