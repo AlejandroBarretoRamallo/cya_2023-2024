@@ -43,25 +43,28 @@ int main(int argc, char *argv[]) {
   FA >> numero_estados;  // la seungda linea nos indica el numero de estados del FA
   int estado_arranque;
   FA >> estado_arranque; // la tercera linea el estado de arranque
-  int estado, estado_siguiente, ntransiciones;
-  bool aceptacion;
+  int estado, estado_siguiente, ntransiciones, aceptacion;
   char simbolo_;
   std::vector<Estado> estados;
   ConjuntoEstados conjunto_estados(estados);
   std::map <char, std::vector<int>> transiciones;
-  for(int i = 0; i < numero_estados; ++i) { // crear todos los estados y meterlos en el vector de ConjuntoEstados
-    Estado q(transiciones);
-    conjunto_estados.AddEstados(q);
-  }
-  while(FA >> estado) {   // bucle while para crear el automata finito, primero introduce si es de aceptacion y el numero de transiciones
+  while(FA >> estado) {
     FA >> aceptacion >> ntransiciones;
-    conjunto_estados.GetVector()[estado].SetIsAccepted(aceptacion);
-    conjunto_estados.GetVector()[estado].SetNtransiciones(ntransiciones);
+    Estado q(transiciones, aceptacion, ntransiciones);
+    conjunto_estados.AddEstados(q);
     for(int i = 0; i < ntransiciones; ++i) {
-      FA >> simbolo_ >> estado_siguiente;
-      conjunto_estados.GetVector()[estado].AddTransicion(simbolo_, estado_siguiente); // posteriormente vamos metiendo las transiciones en el map
+      while(true) {
+        FA >> simbolo_;
+        if(simbolo_ != ' ') {
+          FA >> estado_siguiente;
+          break;
+        }
+      }
+      conjunto_estados.GetVector()[estado].AddTransicion(simbolo_, estado_siguiente); // posteriormente vamos metiendo las transiciones en el map;
     }
+
   }
+  /**
   std::ifstream cadenas(fichero_cadenas);
   if(!cadenas.is_open()) {
     std::cout << "Error, no se pudo abrir el archivo " << fichero_cadenas << "\n";
@@ -70,8 +73,10 @@ int main(int argc, char *argv[]) {
   std::string cadena;
   int posicion_cadena = 0;
   while(getline(cadenas, cadena)) {  // bucle while para reconocer las cadenas 
-    while(cadena.length() < posicion_cadena) {
-      conjunto_estados.AddEstadoActual(conjunto_estados.GetVector()[estado_arranque]);  // iniciamos en el estado de arranque
+    posicion_cadena = 0;
+    conjunto_estados.VaciarEstadoActual();
+    conjunto_estados.AddEstadoActual(conjunto_estados.GetVector()[estado_arranque]);  // iniciamos en el estado de arranque
+    while(cadena.length() > posicion_cadena) {
       for(int i = 0; i < conjunto_estados.GetEstadoActual().size(); ++i) { // recorremos los estados actuales
         std::vector<int> transiciones_ = conjunto_estados.GetEstadoActual()[i].GetMap().at(cadena[posicion_cadena]);  // miramos los estados siguientes
         for(int j = 0; j < transiciones_.size(); ++i) {
@@ -89,7 +94,6 @@ int main(int argc, char *argv[]) {
     int aceptado = 0;
     for(int i = 0; i < conjunto_estados.GetEstadoActual().size(); ++i) {
       if(conjunto_estados.GetEstadoActual()[i].IsAccepted()) {
-        std::cout << cadena << "----------- aceptada\n";
         aceptado = 1;
         break;
       }
@@ -97,5 +101,9 @@ int main(int argc, char *argv[]) {
     if(aceptado == 0) {
       std::cout << cadena << "------------- no aceptada\n";
     }
-  }
+    else {
+      std::cout << cadena << "------------- aceptada\n";
+    }
+  } **/
 }
+

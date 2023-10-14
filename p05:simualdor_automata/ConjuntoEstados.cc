@@ -3,6 +3,8 @@
 
 ConjuntoEstados::ConjuntoEstados(std::vector<Estado> estados_) {
   estados = estados_;
+  EstadoActual = std::vector<Estado>();
+  ProximosEstados = std::vector<Estado>();
 }
 
 void ConjuntoEstados::AddEstados(Estado estado) {
@@ -30,9 +32,11 @@ void ConjuntoEstados::AddProxEstado(Estado estado) {
 }
 
 void ConjuntoEstados::VaciarProxEstado() {
+  ProximosEstados.clear();
   ProximosEstados.resize(0);
 }
 
 void ConjuntoEstados::VaciarEstadoActual() {
+  EstadoActual.clear();
   EstadoActual.resize(0);
 }
