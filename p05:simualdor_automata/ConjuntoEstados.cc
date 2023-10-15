@@ -32,11 +32,9 @@ void ConjuntoEstados::AddProxEstado(Estado estado) {
 }
 
 void ConjuntoEstados::VaciarProxEstado() {
-  ProximosEstados.clear();
   ProximosEstados.resize(0);
 }
 
 void ConjuntoEstados::VaciarEstadoActual() {
-  EstadoActual.clear();
   EstadoActual.resize(0);
 }

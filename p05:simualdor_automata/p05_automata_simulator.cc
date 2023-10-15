@@ -43,67 +43,76 @@ int main(int argc, char *argv[]) {
   FA >> numero_estados;  // la seungda linea nos indica el numero de estados del FA
   int estado_arranque;
   FA >> estado_arranque; // la tercera linea el estado de arranque
-  int estado, estado_siguiente, ntransiciones, aceptacion;
+  int estado, estado_siguiente, ntransiciones;
+  bool aceptacion;
   char simbolo_;
   std::vector<Estado> estados;
-  ConjuntoEstados conjunto_estados(estados);
-  std::map <char, std::vector<int>> transiciones;
+  ConjuntoEstados conjunto_estados(estados); 
   while(FA >> estado) {
+    std::multimap <char, int> transiciones;
     FA >> aceptacion >> ntransiciones;
-    Estado q(transiciones, aceptacion, ntransiciones);
-    conjunto_estados.AddEstados(q);
     for(int i = 0; i < ntransiciones; ++i) {
-      while(true) {
-        FA >> simbolo_;
-        if(simbolo_ != ' ') {
-          FA >> estado_siguiente;
-          break;
-        }
-      }
-      conjunto_estados.GetVector()[estado].AddTransicion(simbolo_, estado_siguiente); // posteriormente vamos metiendo las transiciones en el map;
+      FA >> simbolo_ >> estado_siguiente;
+      transiciones.insert({simbolo_, estado_siguiente});
     }
-
+    Estado EstadoQ(transiciones, aceptacion, ntransiciones);
+    conjunto_estados.AddEstados(EstadoQ);
   }
-  /**
   std::ifstream cadenas(fichero_cadenas);
-  if(!cadenas.is_open()) {
-    std::cout << "Error, no se pudo abrir el archivo " << fichero_cadenas << "\n";
+  if(!cadenas.is_open()) {  // comprobar que s epudo abrir el segundo archivo
+    std::cout << "Error abriendo el archivo " << fichero_cadenas << std::endl;
     return 0;
   }
   std::string cadena;
-  int posicion_cadena = 0;
-  while(getline(cadenas, cadena)) {  // bucle while para reconocer las cadenas 
+  int posicion_cadena;
+  while(getline(cadenas, cadena)) {
+    int aceptado = 0;
     posicion_cadena = 0;
     conjunto_estados.VaciarEstadoActual();
-    conjunto_estados.AddEstadoActual(conjunto_estados.GetVector()[estado_arranque]);  // iniciamos en el estado de arranque
+    conjunto_estados.AddEstadoActual(conjunto_estados.GetVector()[estado_arranque]); // empezamos en el estado de arranque
     while(cadena.length() > posicion_cadena) {
+      bool pertenece = 0;
       for(int i = 0; i < conjunto_estados.GetEstadoActual().size(); ++i) { // recorremos los estados actuales
-        std::vector<int> transiciones_ = conjunto_estados.GetEstadoActual()[i].GetMap().at(cadena[posicion_cadena]);  // miramos los estados siguientes
-        for(int j = 0; j < transiciones_.size(); ++i) {
-          conjunto_estados.AddProxEstado(conjunto_estados.GetVector()[transiciones_[j]]); // añadimos los estados a los que pasaremos
+        for (const int &elemento : alfabeto_FA.GetSet()) {
+          if(elemento == cadena[posicion_cadena]) { // comprobamos que el elemtno pertenece al alfabeto
+            pertenece = 1;
+            break;
+          }
+        }
+        if(!pertenece) {
+          std::cout << cadena << "-----no aceptada\n";
+          break;
+        }
+        std::multimap <char, int > map = conjunto_estados.GetEstadoActual()[i].GetMap();
+        auto rango = map.equal_range(cadena[posicion_cadena]);
+        // auto it = rango.first;
+        // int a = it-> second;
+        // std::cout << a;
+        for (auto it_ = rango.first; it_ != rango.second; ++it_) {
+          conjunto_estados.AddProxEstado(conjunto_estados.GetVector()[it_ -> second]);
         }
       }
-      conjunto_estados.VaciarEstadoActual(); // vaciamos el vector de estados actuales
-      conjunto_estados.GetEstadoActual().resize(conjunto_estados.GetProxEstado().size());  //le cambianos el tamaño al de los proximos estados
-      for(int i = 0; i < conjunto_estados.GetProxEstado().size(); ++i) {   // estado_actual = proximos estados
+      conjunto_estados.VaciarEstadoActual();
+      for(int i = 0; i < conjunto_estados.GetProxEstado().size();++i) {
         conjunto_estados.AddEstadoActual(conjunto_estados.GetProxEstado()[i]);
       }
-      conjunto_estados.VaciarProxEstado(); // vaciamos el vector de proximos estados
+      conjunto_estados.VaciarProxEstado();
+      if(!pertenece) {
+          break;
+        }
       ++posicion_cadena;
     }
-    int aceptado = 0;
-    for(int i = 0; i < conjunto_estados.GetEstadoActual().size(); ++i) {
+    for(int i = 0; i < conjunto_estados.GetEstadoActual().size();++i) {
       if(conjunto_estados.GetEstadoActual()[i].IsAccepted()) {
         aceptado = 1;
-        break;
       }
     }
-    if(aceptado == 0) {
-      std::cout << cadena << "------------- no aceptada\n";
+    if(aceptado == 1) {
+      std::cout << cadena << "-----aceptada\n";
     }
     else {
-      std::cout << cadena << "------------- aceptada\n";
+      std::cout << cadena << "-----no aceptada\n";
     }
-  } **/
+  } 
 }
 

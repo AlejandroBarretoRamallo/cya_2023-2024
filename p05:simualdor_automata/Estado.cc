@@ -1,22 +1,21 @@
 #include "Estado.h"
 #include <vector>
 
-Estado::Estado(std::map <char, std::vector<int>> transiciones_, bool aceptacion_, int ntransiciones_) {
-  ntransiciones = ntransiciones_;
-  aceptacion = aceptacion_;
-  transiciones = transiciones_;
-}
-
 void Estado::AddTransicion(char simbolo, int estado_siguiente) {
-  transiciones[simbolo].push_back(estado_siguiente);
-  //for(int i = 0; i < transiciones[simbolo].size(); ++i) {
-    //std::cout << transiciones[simbolo][i] << " ";
-  //}
-  std::cout << transiciones[simbolo].size();
+  transiciones.insert({estado_siguiente, simbolo});
+  // auto rango = transiciones.equal_range(simbolo);
+  // 7auto it = rango.second;
+  // int a = it -> first;
+  // std::cout << a << " ";
+}
+std::multimap<char, int> Estado::GetMap() {
+  return transiciones;
 }
 
-std::map<char, std::vector<int>> Estado::GetMap() {
-  return transiciones;
+Estado::Estado() {
+  transiciones = std::multimap<char, int> ();
+  aceptacion = bool ();
+  ntransiciones = int();
 }
 
 bool Estado::IsAccepted() {
@@ -31,10 +30,10 @@ void Estado::SetNtransiciones(int ntransiciones_) {
   ntransiciones = ntransiciones_;
 }
 
-Estado::Estado() {
-  transiciones = std::map<char, std::vector<int>>();
-  aceptacion = 0;
-  ntransiciones = 0;
+Estado::Estado(std::multimap<char, int> transiciones_, bool aceptacion_, int ntransiciones_) {
+  transiciones = transiciones_;
+  aceptacion = aceptacion_;
+  ntransiciones = ntransiciones_;
 }
 
 int Estado::GetNtransiciones() {

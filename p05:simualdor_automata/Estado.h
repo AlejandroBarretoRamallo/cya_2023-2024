@@ -6,16 +6,16 @@
 
 class Estado{
   public:
-    Estado(std::map <char, std::vector<int>> transiciones_, bool aceptacion_, int ntransiciones_);
+    Estado(std::multimap <char, int> transiciones_, bool aceptacion_, int ntransiciones_);
     Estado();
     void AddTransicion(char simbolo, int estado_siguiente);
-    std::map<char,std::vector<int>> GetMap();
+    std::multimap<char, int> GetMap();
     bool IsAccepted();
     void SetIsAccepted(bool aceptacion_);
     void SetNtransiciones(int ntransiciones_);
     int GetNtransiciones();
   private:
-    std::map <char, std::vector<int>> transiciones;
+    std::multimap <char, int> transiciones;
     int ntransiciones;
     bool aceptacion;
 };
