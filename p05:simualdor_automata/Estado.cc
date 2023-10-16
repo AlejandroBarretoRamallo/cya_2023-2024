@@ -2,11 +2,7 @@
 #include <vector>
 
 void Estado::AddTransicion(char simbolo, int estado_siguiente) {
-  transiciones.insert({estado_siguiente, simbolo});
-  // auto rango = transiciones.equal_range(simbolo);
-  // 7auto it = rango.second;
-  // int a = it -> first;
-  // std::cout << a << " ";
+  transiciones.insert({estado_siguiente, simbolo}); // ir añadiendo las transiciones en el multimap
 }
 std::multimap<char, int> Estado::GetMap() {
   return transiciones;

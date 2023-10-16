@@ -2,7 +2,7 @@
 #include "Alfabeto.h"
 #include <fstream>
 #include "Estado.h"
-#include "ConjuntoEstados.h"
+#include "Automata.h"
 #include <vector>
 
 int main(int argc, char *argv[]) {
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   std::set<char> elementos_alfabeto;
   Alfabeto alfabeto_FA(elementos_alfabeto);  // creamos un objeto alfabeto
   for(int i = 0; i < simbolos.length(); ++i) {
-    if(simbolos[i] != ' ') {
+    if(simbolos[i] != ' ' && simbolos[i] != '&') {
       alfabeto_FA.Push(simbolos[i]); // vamos insertando los simbolos en el alfabeto
     }
   }
@@ -47,32 +47,43 @@ int main(int argc, char *argv[]) {
   bool aceptacion;
   char simbolo_;
   std::vector<Estado> estados;
-  ConjuntoEstados conjunto_estados(estados); 
+  Automata automata(estados);  // creamos el automata
   while(FA >> estado) {
     std::multimap <char, int> transiciones;
     FA >> aceptacion >> ntransiciones;
     for(int i = 0; i < ntransiciones; ++i) {
       FA >> simbolo_ >> estado_siguiente;
-      transiciones.insert({simbolo_, estado_siguiente});
+      bool pertenece_ = 0;
+      for (const int &elemento : alfabeto_FA.GetSet()) {
+        if(elemento == simbolo_) { // comprobamos que el elemtno pertenece al alfabeto
+          transiciones.insert({simbolo_, estado_siguiente}); // añadimos cada simbolo a su correspondiente estado siguiente
+          pertenece_ = 1;
+          break;
+        }
+      }
+      if(!pertenece_) {
+        std::cout << simbolo_ << " no pertenece al alfabeto\n";
+        return 0;
+      }
     }
-    Estado EstadoQ(transiciones, aceptacion, ntransiciones);
-    conjunto_estados.AddEstados(EstadoQ);
+    Estado EstadoQ(transiciones, aceptacion, ntransiciones); // creamos el objeto estado
+    automata.AddEstados(EstadoQ);  // añadimos el estado al automata
   }
-  std::ifstream cadenas(fichero_cadenas);
+  std::ifstream cadenas(fichero_cadenas);  // abrimos el fichero con las cadenas
   if(!cadenas.is_open()) {  // comprobar que s epudo abrir el segundo archivo
     std::cout << "Error abriendo el archivo " << fichero_cadenas << std::endl;
     return 0;
   }
   std::string cadena;
   int posicion_cadena;
-  while(getline(cadenas, cadena)) {
+  while(getline(cadenas, cadena)) {  // leemos las cadenas del segundo fichero
     int aceptado = 0;
     posicion_cadena = 0;
-    conjunto_estados.VaciarEstadoActual();
-    conjunto_estados.AddEstadoActual(conjunto_estados.GetVector()[estado_arranque]); // empezamos en el estado de arranque
+    automata.VaciarEstadoActual();
+    automata.AddEstadoActual(automata.GetVector()[estado_arranque]); // empezamos en el estado de arranque
     while(cadena.length() > posicion_cadena) {
       bool pertenece = 0;
-      for(int i = 0; i < conjunto_estados.GetEstadoActual().size(); ++i) { // recorremos los estados actuales
+      for(int i = 0; i < automata.GetEstadoActual().size(); ++i) { // recorremos los estados actuales
         for (const int &elemento : alfabeto_FA.GetSet()) {
           if(elemento == cadena[posicion_cadena]) { // comprobamos que el elemtno pertenece al alfabeto
             pertenece = 1;
@@ -83,28 +94,33 @@ int main(int argc, char *argv[]) {
           std::cout << cadena << "-----no aceptada\n";
           break;
         }
-        std::multimap <char, int > map = conjunto_estados.GetEstadoActual()[i].GetMap();
-        auto rango = map.equal_range(cadena[posicion_cadena]);
-        // auto it = rango.first;
-        // int a = it-> second;
-        // std::cout << a;
+        std::multimap <char, int > map = automata.GetEstadoActual()[i].GetMap(); // recorremos las transiciones de los estados que pertenecen al estado actual
+        auto rango = map.equal_range(cadena[posicion_cadena]);  // rango contiene todos los valores asociados a un simbolo concreto
+        auto encontrar = map.find('&'); // comprobamos si hay & transiciones
+        if(encontrar != map.end()) {
+          auto rango_ = map.equal_range('&'); // rango_ contiene la epsilon_transicion
+          for (auto it_ = rango.first; it_ != rango.second; ++it_) {
+            automata.AddProxEstado(automata.GetVector()[it_ -> second]); // añadimos a proximo estado todo lo que tenga coomo transicion epsilon
+          }
+        }
         for (auto it_ = rango.first; it_ != rango.second; ++it_) {
-          conjunto_estados.AddProxEstado(conjunto_estados.GetVector()[it_ -> second]);
+          automata.AddProxEstado(automata.GetVector()[it_ -> second]); // accedemos al vector de estados y añadimos el correspondiente a proximo estado
         }
       }
-      conjunto_estados.VaciarEstadoActual();
-      for(int i = 0; i < conjunto_estados.GetProxEstado().size();++i) {
-        conjunto_estados.AddEstadoActual(conjunto_estados.GetProxEstado()[i]);
+      automata.VaciarEstadoActual(); 
+      for(int i = 0; i < automata.GetProxEstado().size();++i) {
+        automata.AddEstadoActual(automata.GetProxEstado()[i]); // actualizamos en estado actual copiando los estados de prox estados
       }
-      conjunto_estados.VaciarProxEstado();
+      automata.VaciarProxEstado(); // vaciamos prox estados para poder repetir el proceso
       if(!pertenece) {
           break;
         }
-      ++posicion_cadena;
+      ++posicion_cadena; // vamos avanzando por la cadena 
     }
-    for(int i = 0; i < conjunto_estados.GetEstadoActual().size();++i) {
-      if(conjunto_estados.GetEstadoActual()[i].IsAccepted()) {
+    for(int i = 0; i < automata.GetEstadoActual().size();++i) {  // recorremos el estado actual que tambien sera el estado final
+      if(automata.GetEstadoActual()[i].IsAccepted()) {  // si cualquiera de los estados actuales es dde aceptacion, la cadena es aceptada
         aceptado = 1;
+        break;
       }
     }
     if(aceptado == 1) {
