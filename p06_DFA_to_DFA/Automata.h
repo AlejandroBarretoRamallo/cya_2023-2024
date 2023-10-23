@@ -15,8 +15,8 @@ class Automata {
     void AddProxEstado(Estado estado);
     void VaciarProxEstado();
     void VaciarEstadoActual();
-    void EpsilonTransiciones(std::vector<Estado> &estados_);
-    void Move(char simolo, std::vector<Estado> conjunto_estados);
+    void EpsilonTransiciones(std::vector<char> &estados_);
+    void Move(char simolo, std::vector<char> conjunto_estados);
   private:
     std::vector<Estado> estados;
     std::vector<Estado> EstadoActual;

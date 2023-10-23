@@ -15,7 +15,7 @@ void Alfabeto::SetSet(std::set<char> set) {
 
 void Alfabeto::RemoveSet() {
   std::set<char> set = caracteres;
-  for(auto& carcater : set) {
+  for (auto& carcater : set) {
     caracteres.erase(carcater);
   }
 }
@@ -27,8 +27,8 @@ void Alfabeto::Push(char simbolo) {
 std::ostream& operator<<(std::ostream& out, Alfabeto& a) {
 	out << "{";
   auto iterador = a.GetSet().rbegin();  // puntero al final del set
-	for(auto i : a.GetSet()) {  // bucle para imprimir el set
-		if(*iterador == i) {
+	for (auto i : a.GetSet()) {  // bucle para imprimir el set
+		if (*iterador == i) {
 			out << i;
 			continue;
 		}
