@@ -3,7 +3,7 @@
 #include <fstream>
 #include "Estado.h"
 #include "Automata.h"
-#include <vector>
+
 
 int main(int argc, char *argv[]) {
   if(argc < 2) {   // comprobar si solo se ha indicado el nombre del programa
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
       FA >> simbolo_ >> estado_siguiente;
       bool pertenece_ = 0;
       for (const int &elemento : alfabeto_FA.GetSet()) {
-        if(elemento == simbolo_) { // comprobamos que el elemtno pertenece al alfabeto
+        if(elemento == simbolo_ || simbolo_ == '&') { // comprobamos que el elemtno pertenece al alfabeto
           transiciones.insert({simbolo_, estado_siguiente}); // añadimos cada simbolo a su correspondiente estado siguiente
           pertenece_ = 1;
           break;
@@ -85,13 +85,12 @@ int main(int argc, char *argv[]) {
       bool pertenece = 0;
       for(int i = 0; i < automata.GetEstadoActual().size(); ++i) { // recorremos los estados actuales
         for (const int &elemento : alfabeto_FA.GetSet()) {
-          if(elemento == cadena[posicion_cadena]) { // comprobamos que el elemtno pertenece al alfabeto
+          if(elemento == cadena[posicion_cadena] || cadena[posicion_cadena] == '&') { // comprobamos que el elemtno pertenece al alfabeto
             pertenece = 1;
             break;
           }
         }
         if(!pertenece) {
-          std::cout << cadena << "-----no aceptada\n";
           break;
         }
         std::multimap <char, int > map = automata.GetEstadoActual()[i].GetMap(); // recorremos las transiciones de los estados que pertenecen al estado actual
