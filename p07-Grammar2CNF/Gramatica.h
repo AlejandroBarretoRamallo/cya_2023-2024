@@ -10,9 +10,9 @@ class Gramatica {
     std::set<char> GetNoTerminales();
     char GetArranque();
     std::multimap<char, std::string> GetProducciones();
-    void BorrarProduccionesVacias();
-    void BorrarProduccionesUnitarias();
-    void BorrarSimbolosInutiles();
+    bool ComprobarProduccionesVacias();
+    bool ComprobarProduccionesUnitarias();
+    void TransformarCNF();
   private:
     std::set<char> conjunto_no_terminales;
     Alfabeto alfabeto;

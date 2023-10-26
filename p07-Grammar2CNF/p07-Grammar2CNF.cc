@@ -64,10 +64,16 @@ int main(int argc, char *argv[]) {
   }
   Gramatica gramatica_1(no_terminales, alfabeto_gr, simbolo_arranque, produccion_a);  // creamos la gramatica
   // eliminamos las producciones vacias
+  if(gramatica_1.ComprobarProduccionesVacias()) {
+    std::cout << "Error. Se han introducido producciones vacias\n";
+    return 0;
+  }
+  if(gramatica_1.ComprobarProduccionesUnitarias()) {
+    std::cout << "Error. Se han introducido producciones unitarias\n";
+    return 0;
+  }
   std::cout << gramatica_1;
-  gramatica_1.BorrarSimbolosInutiles();
+  gramatica_1.TransformarCNF();
   std::cout << gramatica_1;
-  //gramatica_1.BorrarProduccionesVacias();
-  //std::cout << gramatica_1;
 
 }
