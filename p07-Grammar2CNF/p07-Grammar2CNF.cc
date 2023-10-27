@@ -63,7 +63,6 @@ int main(int argc, char *argv[]) {
     produccion_a.emplace(simbolo, produccion_);  // añadimos a cada no termianl sus producciones
   }
   Gramatica gramatica_1(no_terminales, alfabeto_gr, simbolo_arranque, produccion_a);  // creamos la gramatica
-  // eliminamos las producciones vacias
   if(gramatica_1.ComprobarProduccionesVacias()) {
     std::cout << "Error. Se han introducido producciones vacias\n";
     return 0;
