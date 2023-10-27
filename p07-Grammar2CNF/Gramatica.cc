@@ -217,13 +217,59 @@ void Gramatica::TransformarCNF() {
     ++iterador;
   }
   //mitad algoritmo
-  
-  iterador = conjunto_no_terminales.begim();
-  while(iterador != conjunto_no_terminales.end()) {
+  //añadir todas las producciones de 2 no terminales
+  std::multimap<char, std::string>  dobles_no_terminales;
+  iterador = conjunto_no_terminales.begin();
+    while(iterador != conjunto_no_terminales.end()) {
     char no_terminal = *iterador;
-    auto rango = producciones
+    auto rango = producciones.equal_range(no_terminal);
+    for (auto it = rango.first; it != rango.second; ++it) {
+      std::string cadena = it -> second;
+      if(cadena.size() != 2) {
+        continue;
+      }
+      int cadena0 = int(cadena[0]), cadena1 = int(cadena[1]);
+      if(cadena0 >= 65 && cadena0 <= 90 && cadena1 >= 65 && cadena1 <= 90) {
+        dobles_no_terminales.emplace(it -> first, cadena);
+      }
+    }
     ++iterador;
   }
-  
+   //despues de eso, volver a recorrer las producciones en busa de las que tengan longitud >= 3
+   iterador = conjunto_no_terminales.begin();
+  while(iterador != conjunto_no_terminales.end()) {
+    char no_terminal = *iterador;
+    auto rango = producciones.equal_range(no_terminal);
+    for (auto it = rango.first; it != rango.second; ++it) {
+      std::string cadena = it -> second;
+      if(cadena.size() < 3) {
+        continue;
+      }
+      for(int i = cadena.size() - 2; i < cadena.size(); ++i) {
+      std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      bool pertenece = 0;
+      for(int j = 0; j < letras.size(); ++j) {
+        pertenece = 0;
+        for(auto elemento : conjunto_no_terminales) {
+          if(elemento == letras[j]) {
+            pertenece = 1;
+            break;
+          }
+        }
+        if(!pertenece) {
+          bool added = 0;
+          
+          //despues de eso, volver a recorrer las producciones en busa de las que tengan longitud >= 3
+          //comrpobar si ya hay alguna produccion que ya tenga unicamente Bn Dn
+          //si no hay, añadirlas
+          //guardar en un multimap todas las añadidas
+          //buscar en todas las producciones, y si se encuentra alguna de las añadidas, sustituirla por su produccion
+          break;
+        }
+        }
+      }
+    }
+    ++iterador;
+  }
   conjunto_no_terminales.erase(arranque);
 }
