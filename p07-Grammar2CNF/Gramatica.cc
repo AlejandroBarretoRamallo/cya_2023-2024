@@ -218,5 +218,12 @@ void Gramatica::TransformarCNF() {
   }
   //mitad algoritmo
   
+  iterador = conjunto_no_terminales.begim();
+  while(iterador != conjunto_no_terminales.end()) {
+    char no_terminal = *iterador;
+    auto rango = producciones
+    ++iterador;
+  }
+  
   conjunto_no_terminales.erase(arranque);
 }
