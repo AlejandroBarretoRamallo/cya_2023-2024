@@ -245,49 +245,57 @@ void Gramatica::TransformarCNF() {
   while(iterador != conjunto_no_terminales.end()) {
     char no_terminal = *iterador;
     auto rango = producciones.equal_range(no_terminal);
-    for (auto it = rango.first; it != rango.second; ++it) {
+    for (auto it = rango.first; it != rango.second;) {
       std::string cadena = it -> second;
-      if(cadena.size() < 3) {
+      if(cadena.size() < 2) {
+        ++it;
         continue;
       }
-      for(int i = 2 ; i < cadena.size(); ++i) {
-      std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      bool pertenece = 0;
-      for(int j = 0; j < letras.size(); ++j) {
-        pertenece = 0;
-        for(auto elemento : conjunto_no_terminales) {
-          if(elemento == letras[j]) {
-            pertenece = 1;
+      std::string  Des = "";
+      std::string Bes = "";
+      char inicial;
+      for(int i = 1 ; i < cadena.size(); ++i) {
+        std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        bool pertenece = 0;
+        for(int j = 0; j < letras.size(); ++j) {
+          pertenece = 0;
+          for(auto elemento : conjunto_no_terminales) {
+            if(elemento == letras[j]) {
+              pertenece = 1;
+              break;
+            }
+          }
+          if(!pertenece && cadena.size() > 2) {
+            Des += letras[j];
+            conjunto_no_terminales.insert(letras[j]);
             break;
           }
         }
-        if(!pertenece) {
-          bool added = 0;
-          auto iterador_ = conjunto_no_terminales.begin();
-          while (iterador_ != conjunto_no_terminales.end()) { // comrpobar si esa produccion existe
-            char no_term = *iterador_;
-            auto encontrado = dobles_no_terminales.find(no_term);
-            if(encontrado == dobles_no_terminales.end()) {
-              ++iterador_;
-              continue;
-            }
-            auto range = dobles_no_terminales.equal_range(no_term);
-            for (auto iterator = range.first; iterator != range.second; ++iterator) {
-              std::string cadena_ = iterator -> second;
-              if(cadena_[0] == cadena[i] && iterator -> first == cadena_[1]) {
-                added = 1;
-                break;
-              }
-            }
-            ++iterador_;
-          }
-          if(!added) {
-          }
-          //si no hay, añadirlas a los dos maps
-          //buscar en todas las producciones, y si se encuentra alguna de las añadidas, sustituirla por su produccion
+        if(!pertenece && cadena.size() > 2) {
+          Bes += cadena[i];
+        }
+      }
+      std::string añadido = "";
+      for(int i = 0; i < Des.size(); ++i) {
+        añadido = "";
+        if (i == 0) {
+          añadido += Bes[i];
+          añadido += Des[i];
+          producciones.emplace(it -> first, añadido);
+        }
+        if(i + 1 == Des.size()) {
           break;
         }
-        }
+        añadido = "";
+        añadido += Bes[i];
+        añadido += Des[i + 1];
+        producciones.emplace(Des[i], añadido);
+      }
+      if(cadena.size() > 2) {
+        it = producciones.erase(it);
+      }
+      else {
+        ++it;
       }
     }
     ++iterador;
