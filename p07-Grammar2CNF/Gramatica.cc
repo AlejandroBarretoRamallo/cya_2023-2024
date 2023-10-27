@@ -171,6 +171,11 @@ void Gramatica::TransformarCNF() {
   iterador = conjunto_no_terminales.begin();
   while(iterador != conjunto_no_terminales.end()) { // recorro los char
     char no_terminal = *iterador;
+    auto encontrar = producciones.find(no_terminal);
+    if(encontrar == producciones.end()) {
+      ++iterador;
+      continue;
+    }
     auto rango = producciones.equal_range(no_terminal);
     std::string cadena;
     for(auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
@@ -236,7 +241,7 @@ void Gramatica::TransformarCNF() {
     ++iterador;
   }
    //despues de eso, volver a recorrer las producciones en busa de las que tengan longitud >= 3
-   iterador = conjunto_no_terminales.begin();
+  iterador = conjunto_no_terminales.begin();
   while(iterador != conjunto_no_terminales.end()) {
     char no_terminal = *iterador;
     auto rango = producciones.equal_range(no_terminal);
@@ -245,7 +250,7 @@ void Gramatica::TransformarCNF() {
       if(cadena.size() < 3) {
         continue;
       }
-      for(int i = cadena.size() - 2; i < cadena.size(); ++i) {
+      for(int i = 2 ; i < cadena.size(); ++i) {
       std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       bool pertenece = 0;
       for(int j = 0; j < letras.size(); ++j) {
@@ -258,11 +263,27 @@ void Gramatica::TransformarCNF() {
         }
         if(!pertenece) {
           bool added = 0;
-          
-          //despues de eso, volver a recorrer las producciones en busa de las que tengan longitud >= 3
-          //comrpobar si ya hay alguna produccion que ya tenga unicamente Bn Dn
-          //si no hay, añadirlas
-          //guardar en un multimap todas las añadidas
+          auto iterador_ = conjunto_no_terminales.begin();
+          while (iterador_ != conjunto_no_terminales.end()) { // comrpobar si esa produccion existe
+            char no_term = *iterador_;
+            auto encontrado = dobles_no_terminales.find(no_term);
+            if(encontrado == dobles_no_terminales.end()) {
+              ++iterador_;
+              continue;
+            }
+            auto range = dobles_no_terminales.equal_range(no_term);
+            for (auto iterator = range.first; iterator != range.second; ++iterator) {
+              std::string cadena_ = iterator -> second;
+              if(cadena_[0] == cadena[i] && iterator -> first == cadena_[1]) {
+                added = 1;
+                break;
+              }
+            }
+            ++iterador_;
+          }
+          if(!added) {
+          }
+          //si no hay, añadirlas a los dos maps
           //buscar en todas las producciones, y si se encuentra alguna de las añadidas, sustituirla por su produccion
           break;
         }
