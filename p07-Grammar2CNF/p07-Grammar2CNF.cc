@@ -74,5 +74,6 @@ int main(int argc, char *argv[]) {
   std::cout << gramatica_1;
   gramatica_1.TransformarCNF();
   std::cout << gramatica_1;
-
+  std::ofstream output(output_gra);
+  
 }
