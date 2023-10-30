@@ -1,0 +1,34 @@
+3
+a
+b
+c
+9
+S
+A
+B
+C
+D
+E
+F
+X
+Y
+19
+A a
+B b
+C XD
+D XB
+E XB
+F BX
+S AB
+S AC
+S AE
+S AF
+X AY
+X BY
+X a
+X b
+Y AY
+Y BY
+Y a
+Y b
+Y c
