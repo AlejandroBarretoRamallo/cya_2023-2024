@@ -16,9 +16,9 @@ Y
 A a
 B b
 C XD
-D XB
-E XB
-F BX
+D BX
+E BX
+F XB
 S AB
 S AC
 S AE

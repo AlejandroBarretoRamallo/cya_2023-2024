@@ -266,8 +266,7 @@ void Gramatica::TransformarCNF() {
         cadenas_actuales += cadena[i];   // meter en una string los no terminales que ya estaban 
       }
       std::string cadenas = "";
-      for (int i = 0; i < cadenas_actuales.size(); ++i) {  // algoritmo para sustitur y reemplazar unas producciones por otras
-        
+      for (int i = 0; i < cadenas_actuales.size() - 1; ++i) {  // algoritmo para sustitur y reemplazar unas producciones por otras
         cadenas = "";
         if (i == 0) {
           cadenas += cadenas_actuales[0];
@@ -276,14 +275,14 @@ void Gramatica::TransformarCNF() {
           continue;
         }
         if (i == cadenas_actuales.size() - 2) {
+          cadenas += cadenas_actuales[i];
           cadenas += cadenas_actuales[i + 1];
-          cadenas += cadenas_actuales[i + 2];
-          producciones.emplace(prox_cadenas[i], cadenas);
+          producciones.emplace(prox_cadenas[i - 1], cadenas);
+          break;
         }
-        
         cadenas += cadenas_actuales[i];
         cadenas += prox_cadenas[i];
-        producciones.emplace(prox_cadenas[i - 1], cadenas);
+        producciones.emplace(prox_cadenas[i - 1], cadenas);            
       }
       it = producciones.erase(it);  // borrar produccion de tamaño >= 3
     }
