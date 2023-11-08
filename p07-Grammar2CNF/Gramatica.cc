@@ -28,13 +28,13 @@ std::multimap<char, std::string> Gramatica::GetProducciones() {
 
 bool Gramatica::ComprobarProduccionesVacias() {
   auto iterador = conjunto_no_terminales.begin();
-  while(iterador != conjunto_no_terminales.end()) {
+  while (iterador != conjunto_no_terminales.end()) {  // nrecorrer no terminales
   char no_terminal = *iterador;
   auto rango = producciones.equal_range(no_terminal);
-  for(auto it = rango.first; it != rango.second; ++it) {
+  for (auto it = rango.first; it != rango.second; ++it) {  // recorrer producciones
     std::string cadena = it -> second;
-    for(int i = 0; i < cadena.size(); ++i) {
-      if(cadena[i] == '&') {
+    for (int i = 0; i < cadena.size(); ++i) {  // comprobar si algun no terminal que no sea el de arranque produce &
+      if (cadena[i] == '&') {
         return 1;
       }
     }
@@ -46,21 +46,21 @@ bool Gramatica::ComprobarProduccionesVacias() {
 
 bool Gramatica::ComprobarProduccionesUnitarias() {
   auto iterador = conjunto_no_terminales.begin();
-  while(iterador != conjunto_no_terminales.end()) {
+  while (iterador != conjunto_no_terminales.end()) {  // recorrer lkos no terminales
     char no_terminal = *iterador;
     auto rango = producciones.equal_range(no_terminal);
-    for(auto it = rango.first; it != rango.second; ++it) {
+    for (auto it = rango.first; it != rango.second; ++it) {   // recorrer sus producciones
       std::string cadena = it -> second;
-      if(cadena.size() == 1 && cadena[0] >= 65 && cadena[0] <= 90) {
+      if(cadena.size() == 1 && cadena[0] >= 65 && cadena[0] <= 90) {   // compropbar que no hayan producciones unitarias
         return 1;
       }
     }
     ++iterador;
   }
-  auto rango = producciones.equal_range(arranque);
-  for(auto it = rango.first; it != rango.second; ++it) {
+  auto rango = producciones.equal_range(arranque);  // comprobamos tambien si el estado de arranque no contiene producciones unicas
+  for (auto it = rango.first; it != rango.second; ++it) {
     std::string cadena = it -> second;
-    if(cadena.size() == 1 && cadena[0] >= 65 && cadena[0] <= 90) {
+    if (cadena.size() == 1 && cadena[0] >= 65 && cadena[0] <= 90) {
       return 1;
     }
   }
@@ -70,13 +70,13 @@ bool Gramatica::ComprobarProduccionesUnitarias() {
 std::ostream& operator<<(std::ostream& out, Gramatica& a) {
   std::cout << "-------------------------\n";
   typedef std::multimap<char, std::string> produccion_;
-  char arranque = a.GetArranque();
+  char arranque = a.GetArranque();  // empezamos por recorre rproducciones dle estado de arranque
   std::cout << arranque << "---> ";
   produccion_ produccionesS = a.GetProducciones();
   auto S = produccionesS.equal_range(arranque);
-  for(auto it = S.first; it != S.second; ++it) {
+  for (auto it = S.first; it != S.second; ++it) {  // recorremos las producciones
     std::cout << it -> second;
-    if(std::next(it) != S.second) {
+    if (std::next(it) != S.second) {
       std::cout << "|";
     }
   }
@@ -84,13 +84,13 @@ std::ostream& operator<<(std::ostream& out, Gramatica& a) {
   Alfabeto alfabeto = a.GetAlfabeto();
   std::set<char> set = a.GetNoTerminales();
   auto iterador = set.begin();
-  for(int i = 0; i < set.size(); ++i) {
+  for (int i = 0; i < set.size(); ++i) { // recorremos los no terminales
     char no_terminal = *iterador;
     auto encontrar = produccionesS.find(no_terminal);
-    if(encontrar != produccionesS.end()) {
+    if (encontrar != produccionesS.end()) {
       auto rango = produccionesS.equal_range(no_terminal);
       std::cout << no_terminal << "---> ";
-      for(auto it = rango.first; it != rango.second; ++it) {
+      for(auto it = rango.first; it != rango.second; ++it) {   // recorremos sus producciones
         std::cout << it -> second;
         if(std::next(it) != rango.second) {
           std::cout << "|";
@@ -109,54 +109,54 @@ void Gramatica::TransformarCNF() {
   auto iterador = conjunto_no_terminales.begin();
   std::string added = "";
   int num = 0;
-    while(iterador != conjunto_no_terminales.end()) { // recorro los char
+    while (iterador != conjunto_no_terminales.end()) { // recorro los no terminales
     num = 0;
     char no_terminal = *iterador;
     auto rango = producciones.equal_range(no_terminal);
     std::string cadena;
-    for(auto it = rango.first; it != rango.second; ++it) {
+    for (auto it = rango.first; it != rango.second; ++it) {  // compruebo si cada no terminal tiene una unica produccion
       ++num;
     }
-    for(auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
+    for (auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
       std::string cadena = it -> second;
       int cadena_ = int(cadena[0]);
-      if(cadena.size() == 1 && (cadena_ < 65 || cadena_ > 90) && num <= 1) {
+      if(cadena.size() == 1 && (cadena_ < 65 || cadena_ > 90) && num <= 1) {  // si tieen euna unica produccion y es un terminal, guardarla en la string de peoducciones unicas de terminales ya añadidas
         added += cadena[0];
       }
     }
     ++iterador;
   }
   iterador = conjunto_no_terminales.begin();
-  while(iterador != conjunto_no_terminales.end()) { // recorro los char
+  while (iterador != conjunto_no_terminales.end()) { // recorro los char
     char no_terminal = *iterador;
     auto rango = producciones.equal_range(no_terminal);
     std::string cadena;
-    for(auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
+    for (auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
       cadena = it -> second;
-      if(cadena.size() >= 2) {
-        for(int i = 0; i < cadena.size(); ++i) {  // recorro una produccion
+      if (cadena.size() >= 2) {   // solo recorro las producciones con 2 o mas simbolos
+        for (int i = 0; i < cadena.size(); ++i) {  // recorro una produccion
           int cadena_ = int(cadena[i]);
-          if(cadena_ < 65 || cadena_ > 90) {
+          if (cadena_ < 65 || cadena_ > 90) { // si es no terminal busco una letra no utilizada para asignarla a el no terminal
             std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             bool pertenece = 0;
-            for(int j = 0; j < letras.size(); ++j) {
+            for (int j = 0; j < letras.size(); ++j) {
               pertenece = 0;
-              for(auto elemento : conjunto_no_terminales) {
+              for (auto elemento : conjunto_no_terminales) {
                 if(elemento == letras[j]) {
                   pertenece = 1;
                   break;
                 }
               }
-              if(!pertenece) {
+              if (!pertenece) {
                 bool terminal_ = 0;
-                for(int k = 0; k < added.size(); ++k) {
+                for (int k = 0; k < added.size(); ++k) {
                   if(added[k] == cadena[i]) {
                     terminal_ = 1;
                     break;
                   }
                 }
-                if(!terminal_) {
-                conjunto_no_terminales.insert(letras[j]);
+                if (!terminal_) {
+                conjunto_no_terminales.insert(letras[j]);  // añado el no terminal a las producciones y al conjunto no terminales
                 std::string terminal = "";
                 terminal += cadena[i];
                 producciones.emplace(letras[j], terminal);
@@ -172,26 +172,25 @@ void Gramatica::TransformarCNF() {
     }
     ++iterador;
   }
-  //bien
   std::map<char, char> producciones_unicas;
   iterador = conjunto_no_terminales.begin();
-  while(iterador != conjunto_no_terminales.end()) { // recorro los char
+  while (iterador != conjunto_no_terminales.end()) { // recorro los char
     char no_terminal = *iterador;
     auto encontrar = producciones.find(no_terminal);
-    if(encontrar == producciones.end()) {
+    if (encontrar == producciones.end()) {
       ++iterador;
       continue;
     }
     auto rango = producciones.equal_range(no_terminal);
     std::string cadena;
     num = 0;
-    for(auto it = rango.first; it != rango.second; ++it) {
+    for (auto it = rango.first; it != rango.second; ++it) {
       ++num;
     }
-    for(auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
+    for (auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
     std::string cadena = it -> second;
     int cadena_ = int(cadena[0]);
-      if(cadena.size() == 1 && (cadena_ < 65 || cadena_ > 90) && num <= 1) {
+      if (cadena.size() == 1 && (cadena_ < 65 || cadena_ > 90) && num <= 1) {  // revisar las producciones unicas de terminales
         char element = it -> first;
         producciones_unicas.emplace(element, cadena[0]);
       }
@@ -200,28 +199,28 @@ void Gramatica::TransformarCNF() {
   }
   //meter producciones unicas de terminales
   iterador = conjunto_no_terminales.begin();
-  while(iterador != conjunto_no_terminales.end()) { // recorro los char
+  while (iterador != conjunto_no_terminales.end()) { // recorro los char
     char no_terminal = *iterador;
     auto rango = producciones.equal_range(no_terminal);
     std::string cadena;
-    for(auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
+    for (auto it = rango.first; it != rango.second; ++it) {  // recorro las difderentes producciones
       cadena = it -> second;
-      if(cadena.size() > 1) {
-        for(int i = 0; i < cadena.size(); ++i) {
+      if (cadena.size() > 1) {
+        for (int i = 0; i < cadena.size(); ++i) {
           bool pertenece = 0;
-          for(int j = 0; j < added.size(); ++j) {
-            if(added[j] == cadena[i]) {
+          for (int j = 0; j < added.size(); ++j) {
+            if (added[j] == cadena[i]) {
               pertenece = 1;
               break;
             }
           }
-          if(!pertenece) {
+          if (!pertenece) {
             continue;
           }
-          for(auto iterator = producciones_unicas.begin(); iterator != producciones_unicas.end(); ++iterator) {
+          for (auto iterator = producciones_unicas.begin(); iterator != producciones_unicas.end(); ++iterator) {
             auto range = producciones_unicas.equal_range(iterator -> first);
-            for(auto it_ = range.first; it_ != range.second; ++it_) {
-              if(it_ -> second == cadena[i]) {
+            for (auto it_ = range.first; it_ != range.second; ++it_) {     // cambiar el no terminal
+              if (it_ -> second == cadena[i]) {
                 it -> second[i] = iterator -> first;
                 break;
               }
@@ -233,148 +232,60 @@ void Gramatica::TransformarCNF() {
     ++iterador;
   }
   //mitad algoritmo
-  std::string des;
-  std::string bes;
-  for(auto elemento : conjunto_no_terminales) {
+  std::string prox_cadenas;
+  std::string cadenas_actuales;
+  for (auto elemento : conjunto_no_terminales) {
     auto rango = producciones.equal_range(elemento);
-    for(auto it = rango.first; it != rango.second;) {
-      des = "";
-      bes = "";
+    for (auto it = rango.first; it != rango.second;) {  // revisar cadenas mayores o iguasles que tres
+      prox_cadenas = "";
+      cadenas_actuales = "";
       std::string cadena = it -> second;
-      if(cadena.size() < 3) {
+      if (cadena.size() < 3) {
         ++it;
         continue;
       }
       std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       bool pertenece = 0;
-      for(int i = 0; i < cadena.size() -2; ++i) {
-        for(int j = 0; j < letras.size(); ++j) {
+      for (int i = 0; i < cadena.size() -2; ++i) {
+        for (int j = 0; j < letras.size(); ++j) {
           pertenece = 0;
-          for(auto elemento : conjunto_no_terminales) {
-            if(elemento == letras[j]) {
+          for (auto elemento : conjunto_no_terminales) {
+            if (elemento == letras[j]) {
               pertenece = 1;
               break;
             }
           }
-          if(!pertenece) {
-            des += letras[j];
-            conjunto_no_terminales.insert(letras[j]);
+          if (!pertenece) {
+            prox_cadenas += letras[j];
+            conjunto_no_terminales.insert(letras[j]);  // crear no terminales necesarios
             break;
           }
         }
       }
-      for(int i = 0; i < cadena.size(); ++i) {
-        bes += cadena[i];
+      for (int i = 0; i < cadena.size(); ++i) {
+        cadenas_actuales += cadena[i];   // meter en una string los no terminales que ya estaban 
       }
       std::string cadenas = "";
-      for(int i = 0; i < bes.size(); ++i) {
-        
+      for (int i = 0; i < cadenas_actuales.size() - 1; ++i) {  // algoritmo para sustitur y reemplazar unas producciones por otras
         cadenas = "";
-        if(i == 0) {
-          cadenas += bes[0];
-          cadenas += des[0];
+        if (i == 0) {
+          cadenas += cadenas_actuales[0];
+          cadenas += prox_cadenas[0];
           producciones.emplace(it -> first, cadenas);
           continue;
         }
-        if(i == bes.size() - 2) {
-          cadenas += bes[i + 1];
-          cadenas += bes[i + 2];
-          producciones.emplace(des[i], cadenas);
+        if (i == cadenas_actuales.size() - 2) {
+          cadenas += cadenas_actuales[i];
+          cadenas += cadenas_actuales[i + 1];
+          producciones.emplace(prox_cadenas[i - 1], cadenas);
+          break;
         }
-        
-        cadenas += bes[i];
-        cadenas += des[i];
-        producciones.emplace(des[i - 1], cadenas);
+        cadenas += cadenas_actuales[i];
+        cadenas += prox_cadenas[i];
+        producciones.emplace(prox_cadenas[i - 1], cadenas);            
       }
-      it = producciones.erase(it);
+      it = producciones.erase(it);  // borrar produccion de tamaño >= 3
     }
   }
   conjunto_no_terminales.erase(arranque);
 }
-
-
-/**std::multimap<char, std::string>  dobles_no_terminales;
-  iterador = conjunto_no_terminales.begin();
-    while(iterador != conjunto_no_terminales.end()) {
-    char no_terminal = *iterador;
-    auto rango = producciones.equal_range(no_terminal);
-    for (auto it = rango.first; it != rango.second; ++it) {
-      std::string cadena = it -> second;
-      if(cadena.size() != 2) {
-        continue;
-      }
-      int cadena0 = int(cadena[0]), cadena1 = int(cadena[1]);
-      if(cadena0 >= 65 && cadena0 <= 90 && cadena1 >= 65 && cadena1 <= 90) {
-        dobles_no_terminales.emplace(it -> first, cadena);
-      }
-    }
-    ++iterador;
-  }
-  //despues de eso, volver a recorrer las producciones en busa de las que tengan longitud >= 3
-  iterador = conjunto_no_terminales.begin();
-  while(iterador != conjunto_no_terminales.end()) {
-    char no_terminal = *iterador;
-    auto rango = producciones.equal_range(no_terminal);
-    for (auto it = rango.first; it != rango.second;) {
-      std::string cadena = it -> second;
-      if(cadena.size() < 2) {
-        ++it;
-        continue;
-      }
-      std::string  Des = "";
-      std::string Bes = "";
-      char inicial;
-      for(int i = 1 ; i < cadena.size(); ++i) {
-        std::string letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        bool pertenece = 0;
-        for(int j = 0; j < letras.size(); ++j) {
-          pertenece = 0;
-          for(auto elemento : conjunto_no_terminales) {
-            if(elemento == letras[j]) {
-              pertenece = 1;
-              break;
-            }
-          }
-          if(!pertenece && cadena.size() > 2) {
-            Des += letras[j];
-            conjunto_no_terminales.insert(letras[j]);
-            break;
-          }
-        }
-        if(!pertenece && cadena.size() > 2) {
-          Bes += cadena[i];
-        }
-      }
-      std::string añadido = "";
-      for(int i = 0; i < Des.size(); ++i) {
-        añadido = "";
-        if (i == 0) {
-          añadido += Bes[i];
-          añadido += Des[i];
-          producciones.emplace(it -> first, añadido);
-        }
-        if(i + 1 == Des.size()) {
-          break;
-        }
-        añadido = "";
-        if(i + 2 == Des.size()) {
-        añadido += Bes[i];
-        añadido += Bes[i + 1];
-        producciones.emplace(Des[i], añadido);
-        }
-        else {
-          añadido += Bes[i];
-          añadido += Des[i + 1];
-          producciones.emplace(Des[i], añadido);
-        }
-        
-      }
-      if(cadena.size() > 2) {
-        it = producciones.erase(it);
-      }
-      else {
-        ++it;
-      }
-    }
-    ++iterador;
-  }*/

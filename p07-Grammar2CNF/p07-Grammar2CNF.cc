@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Gramatica.h"
 #include <map>
+#include <cctype>
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {   // comprobar si solo se ha indicado el nombre del programa
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
     input >> terminal;
     elementos_gr.insert(terminal);
   }
-  Alfabeto alfabeto_gr(elementos_gr);  //c creamos alfabeto con sus correspondientes simbolos
+  Alfabeto alfabeto_gr(elementos_gr);  // creamos alfabeto con sus correspondientes simbolos
   int n_no_terminales;
   input >> n_no_terminales;
   input >> simbolo_arranque;
@@ -58,16 +59,16 @@ int main(int argc, char *argv[]) {
   input >> num_producciones;
   char simbolo;
   std::string produccion_;
-  for(int i = 0; i < num_producciones; ++i) { 
+  for (int i = 0; i < num_producciones; ++i) { 
     input >> simbolo >> produccion_;
-    produccion_a.emplace(simbolo, produccion_);  // añadimos a cada no termianl sus producciones
+    produccion_a.emplace(simbolo, produccion_);  // añadimos a cada no terminal sus producciones
   }
   Gramatica gramatica_1(no_terminales, alfabeto_gr, simbolo_arranque, produccion_a);  // creamos la gramatica
-  if(gramatica_1.ComprobarProduccionesVacias()) {
+  if (gramatica_1.ComprobarProduccionesVacias()) {
     std::cout << "Error. Se han introducido producciones vacias\n";
     return 0;
   }
-  if(gramatica_1.ComprobarProduccionesUnitarias()) {
+  if (gramatica_1.ComprobarProduccionesUnitarias()) {
     std::cout << "Error. Se han introducido producciones unitarias\n";
     return 0;
   }
@@ -75,4 +76,42 @@ int main(int argc, char *argv[]) {
   gramatica_1.TransformarCNF();
   std::cout << gramatica_1;
   std::ofstream output(output_gra);
+<<<<<<< HEAD
 }
+=======
+  std::set<char> terminales = alfabeto_gr.GetSet();
+  output << terminales.size() << std::endl;
+  for (auto elementos : terminales) {
+    output << elementos << "\n";
+  }
+  output << gramatica_1.GetNoTerminales().size() + 1 << "\n" << gramatica_1.GetArranque() << "\n";
+  for(auto elemento : gramatica_1.GetNoTerminales()) {
+    output << elemento << "\n";
+  }
+  int num_producciones_ = 0;
+  no_terminales = gramatica_1.GetNoTerminales();
+  no_terminales.insert(simbolo_arranque);
+  std::multimap<char, std::string> producciones = gramatica_1.GetProducciones();
+  for(auto elemento : no_terminales) {
+    auto rango = producciones.equal_range(elemento);
+    for(auto it = rango.first; it != rango.second; ++it) {
+      ++num_producciones_;
+    }
+  }
+  output << num_producciones_ << "\n";
+  for (auto elemento : no_terminales) {
+    auto rango = producciones.equal_range(elemento);
+    std::string cadena;
+    for (auto it = rango.first; it != rango.second; ++it) {
+      cadena = it -> second;
+      output << it -> first << " ";
+      for(auto caracter : cadena) {
+        if(isprint(caracter)) {
+          output << caracter;
+        }
+      }
+      output << "\n";   
+    }
+  }
+}
+>>>>>>> 6f932d6f6c354d096118e982c4605c9dc017dfca
