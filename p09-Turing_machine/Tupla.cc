@@ -2,17 +2,62 @@
 
 /**
  * @brief Constructor
- * @param estado_actual Estado de la maquina
- * @param estado_siguiente Estado al que va a ir la maquina
- * @param read_simbol Simbolo que lee
- * @param write_simbol Simbolo que se escribe
- * @param move A que lado se mueve la maquina
+ * @param EstadoActual Estado de la maquina
+ * @param EstadoSiguiente Estado al que va a ir la maquina
+ * @param ReadSimbol Simbolo que lee
+ * @param WriteSimbol Simbolo que se escribe
+ * @param Move A que lado se mueve la maquina
 */
 
-Tupla::Tupla(int estado_actual, int estado_siguiente, char read_simbol, char write_simbol, char move) {
-  estado_actual_ = estado_actual;
-  estado_siguiente_ = estado_siguiente;
-  read_simbol_ = read_simbol;
-  write_simbol_ = write_simbol;
-  move_ = move;
+Tupla::Tupla(int EstadoActual, int EstadoSiguiente, char ReadSimbol, char WriteSimbol, char Move) {
+  EstadoActual_ = EstadoActual;
+  EstadoSiguiente_ = EstadoSiguiente;
+  ReadSimbol_ = ReadSimbol;
+  WriteSimbol_ = WriteSimbol;
+  Move_ = Move;
+}
+
+/**
+ * @brief getter
+ * @return Estado actual
+*/
+
+int Tupla::GetEstadoActual() {
+  return EstadoActual_;
+}
+
+/**
+ * @brief getter
+ * @return Estado siguiente
+*/
+
+int Tupla::GetEstadoSiguiente() {
+  return EstadoSiguiente_;
+}
+
+/**
+ * @brief getter
+ * @return Simbolo que lee
+*/
+
+char Tupla::GetReadSimbol() {
+  return ReadSimbol_;
+}
+
+/**
+ * @brief getter
+ * @return A que lado se mueve
+*/
+
+char Tupla::GetMove() {
+  return Move_;
+}
+
+/**
+ * @brief getter
+ * @return Simbolo que lee
+*/
+
+char Tupla::GetWriteSimbol() {
+  return WriteSimbol_;
 }

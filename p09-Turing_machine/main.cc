@@ -1,4 +1,5 @@
 #include "TuringMachine.h"
+#include <fstream>
 
 /**
  * @brief Comprueba que el numero de parametros sea correcto
@@ -7,7 +8,10 @@
 */
 
 bool CheckCorrectParameters(int argc) {
-  return argc == 2 ? true : false;
+  if (argc == 2 || argc == 3) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -18,15 +22,37 @@ bool CheckCorrectParameters(int argc) {
 
 int main(int argc, char *argv[]) {
   if (!CheckCorrectParameters(argc)) {  // comprobar el numero de parametros
-    std::cout << "No se han pasado el numero correcto de parametros.Puedes utilizar -h para mas informacion\n";
+    std::cout << "No se han pasado el numero correcto de parametros.Puedes utilizar --h para mas informacion\n";
     return 0;
   }
   std::string nombre_archivo = argv[1];
-  if (nombre_archivo == "-h") {   // comprobar si se quiere imprimir ayuda
+  if (nombre_archivo == "--h") {   // comprobar si se quiere imprimir ayuda
     std::cout << "Se debe indicar el nombre de un archivo .tm con una maquina de turing especificada\n";
     return 0;
   }
+  if (argc == 2 && nombre_archivo != "--h") {
+    std::cout << "Se estan introduciendo los parametros incorrectos. Consulta --h\n";
+    return 0;
+  }
+  std::string cinta = "$";
+  std::string cadena;
+  std::string arhcivo_cadena = argv[2];
+  std::ifstream input2(arhcivo_cadena);
+  input2 >> cadena;
+  for(char caracter : cadena) {
+    cinta += caracter;
+  }
+  cinta += '$';
   TuringMachine MaquinaTuring(nombre_archivo); // creamos la maquina de turing
-  
+  if (!MaquinaTuring.GetFileOpened()) {
+    return 0;
+  }
+  if (MaquinaTuring.ReadString(cinta)) { // compruebo si la cadena pertenece
+    std::cout << "Cadena aceptada\n";
+  }
+  else {
+    std::cout << "Cadena no aceptada\n";
+  }
+  return 0;
 }
 

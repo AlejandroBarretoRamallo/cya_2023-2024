@@ -1,12 +1,18 @@
+#pragma once
 #include <iostream>
 
 class Tupla {
   public:
-    Tupla(int estado_actual, int estado_siguiente, char read_simbol, char write_simbol, char move);
+    Tupla(int EstadoActual, int EstadoSiguiente, char ReadSimbol, char WriteSimbol, char Move);
+    int GetEstadoActual();
+    int GetEstadoSiguiente();
+    char GetReadSimbol();
+    char GetMove();
+    char GetWriteSimbol();
   private:
-    int estado_actual_;
-    int estado_siguiente_;
-    char read_simbol_;
-    char write_simbol_;
-    char move_;;
+    int EstadoActual_;
+    int EstadoSiguiente_;
+    char ReadSimbol_;
+    char WriteSimbol_;
+    char Move_;
 };
