@@ -14,13 +14,22 @@ TuringMachine::TuringMachine(std::string archivo_entrada) {
     return;
   }
   FileOpened = 1;
-  std::string linea;
   input >> NumEstados;
   input >> EstadoArranque;
+  if (EstadoArranque > NumEstados - 1) {  // comprobar si el estado de arranque es correcto
+    std::cout << "Error: el estado de arranque no existe \n";
+    FileOpened = 0;
+    return;
+  }
   std::string cadena;
   getline(input, cadena);
   getline(input, cadena);
   for (int i = 0; i < cadena.size(); ++i) { // leer estados finales
+    if (cadena[i] - 48 > NumEstados - 1) {
+      std::cout << "Error: el estado de aceptacion " << i << " no existe \n";
+      FileOpened = 0;
+      return;
+    }
     EstadosFinales.insert(cadena[i] - 48);
     ++i;
   }
@@ -57,12 +66,12 @@ bool TuringMachine::ReadString(std::string cinta) {
     }
     Tupla tupla = Tuplas[posicion_tupla];
     // guardar los valores de la tupla
-    char read_simbol = tupla.GetReadSimbol();  //a
-    char write_simbol = tupla.GetWriteSimbol();  //x
-    char move = tupla.GetMove();  //r
-    int estado_siguiente = tupla.GetEstadoSiguiente(); // 1
+    char read_simbol = tupla.GetReadSimbol();  
+    char write_simbol = tupla.GetWriteSimbol();  
+    char move = tupla.GetMove();  
+    int estado_siguiente = tupla.GetEstadoSiguiente(); 
     bool Read = read_simbol == write_simbol ? true : false; // comprobar si solo se lee o si tambien se escribe
-    /**if (!Read) {
+    if (!Read) {
       cinta[CabezaLectura] = write_simbol; // sobreescribir el simbolo
       if (read_simbol == '$') { // comprobamos si el blanco que hay que añadir esta a la izquierda o a la derecha
         if (CabezaLectura != 0) {
@@ -71,14 +80,12 @@ bool TuringMachine::ReadString(std::string cinta) {
         if (CabezaLectura == 0) {  // añadir blanco al principio
           std::string cadena = "$";
           cadena += cinta;
-          cinta = cadena;
+          cinta = cadena; 
           ++CabezaLectura; // como añadimos por la izquierda el indice incrementa en 1
-          std::cout << CabezaLectura;
         }
       }
-    }**/
-    cinta[CabezaLectura] = write_simbol;
-    switch (tupla.GetMove()) { // mover a izquierda o derecha la cabeza de lectura
+    }
+    switch (move) { // mover a izquierda o derecha la cabeza de lectura
       case 'L':
         --CabezaLectura;
         break;
@@ -131,4 +138,20 @@ int TuringMachine::FindTupla(int actual_state, char elemento) {
 
 bool TuringMachine::GetFileOpened() {
   return FileOpened;
+}
+
+/**
+ * @brief Imprime los datos de la maquina de turing
+*/
+
+void TuringMachine::PrintMachine() {
+  std::cout << NumEstados << "\n" << EstadoArranque << "\n"; // imprimir numero de estados y estado de arranque
+  for (int estado_aceptacion : EstadosFinales) {  // imprimir estados de aceptacion
+    std::cout << estado_aceptacion << " ";
+  }
+  std::cout << "\n" << Tuplas.size() << "\n";
+  for (int i = 0; i < Tuplas.size(); ++i) {
+    std::cout << Tuplas[i].GetEstadoActual() << " " << Tuplas[i].GetReadSimbol() << " " << Tuplas[i].GetWriteSimbol() << " ";
+    std::cout << Tuplas[i].GetMove() << " " << Tuplas[i].GetEstadoSiguiente() << "\n";
+  }
 }

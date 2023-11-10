@@ -12,6 +12,7 @@ class TuringMachine {
     int FindTupla(int actual_state, char elemento);
     bool Acepted(int estado_final);
     bool GetFileOpened();
+    void PrintMachine();
   private:
     int NumEstados;
     int EstadoArranque;
