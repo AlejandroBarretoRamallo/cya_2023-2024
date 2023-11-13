@@ -8,13 +8,28 @@
 
 TuringMachine::TuringMachine(std::string archivo_entrada) {
   std::ifstream input(archivo_entrada); // abrir fichero de entrada
-  std::string linea;
+  if (!input.is_open()) {
+    std::cout << "No se pudo abrir el archivo\n";
+    FileOpened = 0;
+    return;
+  }
+  FileOpened = 1;
   input >> NumEstados;
   input >> EstadoArranque;
+  if (EstadoArranque > NumEstados - 1) {  // comprobar si el estado de arranque es correcto
+    std::cout << "Error: el estado de arranque no existe \n";
+    FileOpened = 0;
+    return;
+  }
   std::string cadena;
   getline(input, cadena);
   getline(input, cadena);
   for (int i = 0; i < cadena.size(); ++i) { // leer estados finales
+    if (cadena[i] - 48 > NumEstados - 1) {  // comprobar si existe el estados
+      std::cout << "Error: el estado de aceptacion " << i << " no existe \n";
+      FileOpened = 0;
+      return;
+    }
     EstadosFinales.insert(cadena[i] - 48);
     ++i;
   }
@@ -24,6 +39,11 @@ TuringMachine::TuringMachine(std::string archivo_entrada) {
   char read_simbol, write_simbol, move;
   for (int i = 0; i < NumTuplas; ++i) {  // leer todas las tuplas
     input >> actual_state >> read_simbol  >> write_simbol >> move >> estado_siguiente;
+    if (actual_state > NumEstados - 1 || estado_siguiente > NumEstados -1) { // comprobar si las tuplas tienen los estados correctos
+      std::cout << "Hay un estado proporcionado que no existe\n";
+      FileOpened = 0;
+      return;
+    }
     Tupla tupla(actual_state, estado_siguiente, read_simbol, write_simbol, move); // construir una tupla por cada liena
     Tuplas.push_back(tupla);  // añadir la tupla al conjunto de tuplas
     AlfabetoCinta.Push(read_simbol);  // añadir los simbolos que puede leer al alfabeto 
@@ -42,15 +62,59 @@ TuringMachine::TuringMachine(std::string archivo_entrada) {
 */
 
 bool TuringMachine::ReadString(std::string cinta) {
+  int posicion_tupla = FindTupla(EstadoActual, cinta[CabezaLectura]);
   while (!IsStopped) {
-    if (!FindTupla(EstadoActual, cinta[CabezaLectura])) {
+    PrintTape(cinta);
+    posicion_tupla = FindTupla(EstadoActual, cinta[CabezaLectura]);
+    if (posicion_tupla == -1) { // findtupla devuelve menos 1 si no se ha encontrado
       IsStopped = true;
       continue;
     }
-    
+    Tupla tupla = Tuplas[posicion_tupla];
+    // guardar los valores de la tupla
+    char read_simbol = tupla.GetReadSimbol();  
+    char write_simbol = tupla.GetWriteSimbol();  
+    char move = tupla.GetMove();  
+    int estado_siguiente = tupla.GetEstadoSiguiente(); 
+    bool Read = read_simbol == write_simbol ? true : false; // comprobar si solo se lee o si tambien se escribe
+    if (!Read) {
+      cinta[CabezaLectura] = write_simbol; // sobreescribir el simbolo
+      if (read_simbol == '$') { // comprobamos si el blanco que hay que añadir esta a la izquierda o a la derecha
+        if (CabezaLectura != 0) {
+          cinta += '$';  // añadir blanco al final
+        }
+        if (CabezaLectura == 0) {  // añadir blanco al principio
+          std::string cadena = "$";
+          cadena += cinta;
+          cinta = cadena; 
+          ++CabezaLectura; // como añadimos por la izquierda el indice incrementa en 1
+        }
+      }
+    }
+    switch (move) { // mover a izquierda o derecha la cabeza de lectura
+      case 'L':
+        --CabezaLectura;
+        break;
+      case 'R':
+        ++CabezaLectura;      
+        break;
+      case 'S':
+        break;
+    }
+    EstadoActual = estado_siguiente;
   }
-  for (int estado : EstadosFinales) {
-    if (estado == EstadoActual) {
+  return Acepted(EstadoActual); // acepted compruba si el estado es de aceptracion o no
+}
+
+/**
+ * @brief Comprueba si el estado es de aceptacion
+ * @param Estado_final El estado en el que se paro la maquina
+ * @return Si el estado es de aceptacion o no
+*/
+
+bool TuringMachine::Acepted(int Estado_final) {
+  for (int estado : EstadosFinales) { // ver si el estado es de aceptacion
+    if (estado == Estado_final) {
       return true;
     }
   }
@@ -71,4 +135,29 @@ int TuringMachine::FindTupla(int actual_state, char elemento) {
     }
   }
   return -1;
+}
+
+/**
+ * @brief Getter
+ * @return Si se pudo abrir el archivo o no
+*/
+
+bool TuringMachine::GetFileOpened() {
+  return FileOpened;
+}
+
+/**
+ * @brief Imprime la cinta
+ * @param cinta La cadena con el contenido de la cinta
+*/
+
+void TuringMachine::PrintTape(std::string cinta) {
+  for (int i = 0; i < CabezaLectura; ++i) {
+    std::cout << cinta[i];
+  }
+  std::cout << " " << "q" << EstadoActual << " ";
+  for (int i = CabezaLectura; i < cinta.size(); ++i) {
+    std::cout << cinta[i];
+  }
+  std::cout << std::endl;
 }
